@@ -37,6 +37,16 @@ def main():
         if not re.fullmatch(r"aerial-[a-z0-9-]{1,48}", identifier) or identifier in seen:
             raise ValueError(f"Invalid or repeated ID: {identifier}")
         seen.add(identifier)
+        if (not 1 <= len(clip["zh"].strip()) <= 80 or not 1 <= len(clip["en"].strip()) <= 120
+                or not 1 <= clip["width"] <= 1920 or not 1 <= clip["height"] <= 1080
+                or not 0 < clip["fps"] <= 60 or clip["durationMs"] <= 0
+                or not clip["credit"].strip() or not clip["sourcePage"].startswith("https://")):
+            raise ValueError(f"Invalid video metadata: {identifier}")
+        original = clip.get("url", "")
+        if original and not re.fullmatch(
+            r"https://d34w7g4gy10iej\.cloudfront\.net/video/[0-9]+/DOD_[0-9]+/DOD_[0-9]+\.mp4", original
+        ):
+            raise ValueError(f"Invalid original DVIDS address: {identifier}")
         media = identity(ROOT / "docs" / "media" / f"{identifier}.mp4")
         if not 0 < media["bytes"] <= 100 * 1024**2 or any(clip[field] != value for field, value in media.items()):
             raise ValueError(f"Video does not match the catalogue: {identifier}")
@@ -48,6 +58,16 @@ def main():
         clip["poster"] = identity(poster)
         if not 0 < clip["poster"]["bytes"] <= 1024**2:
             raise ValueError(f"Poster exceeds 1 MiB: {identifier}")
+    destination = ROOT / "docs" / "catalog.signed.json"
+    if destination.exists():
+        previous = json.loads(base64.b64decode(json.loads(destination.read_text())["payload"], validate=True))
+        if catalog["revision"] < previous["revision"] or (
+            catalog != previous and catalog["revision"] == previous["revision"]
+        ):
+            raise ValueError("A catalogue change requires a higher revision")
+        current = {clip["id"]: clip for clip in catalog["clips"]}
+        if any(current.get(clip["id"]) != clip for clip in previous["clips"]):
+            raise ValueError("Existing catalogue entries are immutable")
     payload = json.dumps(catalog, ensure_ascii=False, separators=(",", ":")).encode()
     signature = subprocess.check_output(["openssl", "dgst", "-sha256", "-sign", str(arguments.key)], input=payload)
     envelope = {
@@ -55,7 +75,7 @@ def main():
         "payload": base64.b64encode(payload).decode(),
         "signature": base64.b64encode(signature).decode(),
     }
-    (ROOT / "docs" / "catalog.signed.json").write_text(json.dumps(envelope, indent=2) + "\n")
+    destination.write_text(json.dumps(envelope, indent=2) + "\n")
 
 
 if __name__ == "__main__":
