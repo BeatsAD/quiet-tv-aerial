@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "revision": 1,
+  "clips": [
+    {
+      "id": "aerial-sierra-buttes",
+      "zh": "内华达山脉",
+      "en": "Sierra Buttes",
+      "url": "https://d34w7g4gy10iej.cloudfront.net/video/2610/DOD_112029230/DOD_112029230.mp4",
+      "bytes": 71779244,
+      "sha256": "38d08c4475cf414a4d76855be64985674bf46f4efd30cb952829633171c0ab75",
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 57257,
+      "fps": 29.97002997002997,
+      "credit": "Andrew Avitt / USDA Forest Service",
+      "sourcePage": "https://www.dvidshub.net/video/1025362/sierra-buttes-north"
+    },
+    {
+      "id": "aerial-ford-island",
+      "zh": "夏威夷福特岛",
+      "en": "Ford Island, Hawaii",
+      "url": "https://d34w7g4gy10iej.cloudfront.net/video/2310/DOD_109950280/DOD_109950280.mp4",
+      "bytes": 27920209,
+      "sha256": "61861eb0ee492b0bac774849e2cbf8d9d95c5f8446c65be37f601cf66eb0c355",
+      "width": 1920,
+      "height": 1080,
+      "durationMs": 40415,
+      "fps": 23.976023976023978,
+      "credit": "Sgt. Kyler Chatman / U.S. Army / Commander Navy Region Hawaii",
+      "sourcePage": "https://www.dvidshub.net/video/901074/aerial-video-ford-island"
+    }
+  ]
+}
